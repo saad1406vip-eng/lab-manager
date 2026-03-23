@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lab Manager">
+<title>Lab Manager Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1b2a;--bg2:#112236;--bg3:#162d46;--card:#1a3352;--border:#1e3f63;--accent:#00c8ff;--accent2:#00ff9d;--no:#ff6b6b;--warn:#ffe066;--orange:#ff8c42;--text:#e8f4fd;--text2:#7aa8cc;--text3:#4a7a9b;--font:'IBM Plex Sans Arabic',sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;--radius-sm:6px;--nav-h:60px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;font-size:14px;overflow-x:hidden;padding-bottom:var(--nav-h);}
+header{background:linear-gradient(135deg,var(--bg2),var(--bg3));border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.header-inner{max-width:820px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;}
+.logo-area{display:flex;align-items:center;gap:10px;}
+.logo-icon{font-size:22px;color:var(--accent);filter:drop-shadow(0 0 6px var(--accent));}
+h1{font-size:15px;font-weight:700;}
+.subtitle{font-size:10px;color:var(--text3);}
+.alert-badge{background:var(--no);color:#fff;border-radius:12px;padding:3px 9px;font-size:11px;font-weight:700;cursor:pointer;display:none;}
+.alert-badge.show{display:block;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:200;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--text3);cursor:pointer;font-family:var(--font);font-size:10px;transition:all 0.2s;}
+.nav-btn .nav-icon{font-size:20px;}
+.nav-btn.active{color:var(--accent);}
+.nav-btn.active .nav-icon{filter:drop-shadow(0 0 6px var(--accent));}
+.page{display:none;max-width:820px;margin:0 auto;padding:14px;flex-direction:column;gap:12px;}
+.page.active{display:flex;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:13px;}
+.card-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:11px;}
+.coverage-row{display:grid;grid-template-columns:105px 1fr 44px;align-items:center;gap:7px;margin-bottom:6px;}
+.cov-label{font-size:11px;color:var(--text2);font-family:var(--mono);white-space:nowrap;}
+.cov-track{height:5px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.cov-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 0.5s;}
+.cov-pct{font-size:10px;font-family:var(--mono);color:var(--accent);}
+.home-tabs-nav{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);background:var(--bg2);}
+.home-tabs-nav::-webkit-scrollbar{display:none;}
+.home-tab-btn{flex-shrink:0;background:none;border:none;color:var(--text3);padding:10px 13px;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:600;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;}
+.home-tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(0,200,255,0.05);}
+.home-tab-content{display:none;padding:12px;}
+.home-tab-content.active{display:block;}
+.section-header{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:8px 0 5px;border-bottom:1px solid var(--border);margin-bottom:5px;margin-top:12px;}
+.section-header:first-of-type{margin-top:0;}
+.reagent-list{display:flex;flex-direction:column;gap:5px;}
+.reagent-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 11px;cursor:pointer;transition:border-color 0.15s;}
+.reagent-item.status-red{border-color:rgba(255,107,107,0.5);background:rgba(255,107,107,0.06);}
+.reagent-item.status-yellow{border-color:rgba(255,224,102,0.4);background:rgba(255,224,102,0.04);}
+.reagent-item.status-orange{border-color:rgba(255,140,66,0.4);background:rgba(255,140,66,0.04);}
+.reagent-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.reagent-name{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);}
+.reagent-type{font-size:9px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+.status-pill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.pill-ok{background:rgba(0,255,157,0.15);color:var(--accent2);}
+.pill-red{background:rgba(255,107,107,0.2);color:var(--no);}
+.pill-yellow{background:rgba(255,224,102,0.2);color:#b8940a;}
+.pill-orange{background:rgba(255,140,66,0.2);color:var(--orange);}
+.kit-progress{margin-bottom:6px;}
+.kit-progress-label{display:flex;justify-content:space-between;margin-bottom:3px;}
+.kpl-text{font-size:9px;color:var(--text3);}
+.kpl-days{font-size:10px;font-family:var(--mono);font-weight:700;}
+.kpl-days.green{color:var(--accent2);}
+.kpl-days.yellow{color:var(--warn);}
+.kpl-days.red{color:var(--no);}
+.kit-bar-track{height:4px;background:var(--bg);border-radius:2px;overflow:hidden;}
+.kit-bar-fill{height:100%;border-radius:2px;transition:width 0.5s;}
+.kit-bar-fill.green{background:var(--accent2);}
+.kit-bar-fill.yellow{background:var(--warn);}
+.kit-bar-fill.red{background:var(--no);}
+.reagent-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;}
+.meta-field{display:flex;flex-direction:column;gap:1px;}
+.meta-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.meta-val{font-size:11px;color:var(--text2);font-family:var(--mono);}
+.tab-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.tab-dev-title{font-size:12px;font-weight:700;color:var(--text);}
+.tab-dev-count{font-size:10px;font-family:var(--mono);color:var(--text3);}
+.tab-dev-count span{color:var(--accent2);font-weight:700;}
+.tab-nav-dev{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);scrollbar-width:none;background:var(--bg2);}
+.tab-nav-dev::-webkit-scrollbar{display:none;}
+.tab-btn-dev{flex-shrink:0;background:none;border:none;color:var(--text3);padding:10px 13px;cursor:pointer;font-family:var(--mono);font-size:11px;font-weight:500;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;}
+.tab-btn-dev.active{color:var(--accent);border-bottom-color:var(--accent);}
+.device-tab-content{display:none;padding:12px;}
+.device-tab-content.active{display:block;}
+.type-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;margin-bottom:7px;}
+.badge-chem{background:rgba(0,200,255,0.15);color:var(--accent);}
+.badge-hormone{background:rgba(0,255,157,0.15);color:var(--accent2);}
+.badge-both{background:rgba(255,165,0,0.15);color:#ffaa00;}
+.badge-emergency{background:rgba(255,107,107,0.15);color:var(--no);}
+.cat-header{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:7px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px;margin-top:9px;}
+.tests-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:4px;}
+.test-item{display:flex;align-items:center;justify-content:space-between;padding:6px 9px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+.test-item.available{border-color:rgba(0,255,157,0.3);background:rgba(0,255,157,0.05);}
+.test-item.unavailable{border-color:rgba(255,107,107,0.15);opacity:0.55;}
+.test-name{font-family:var(--mono);font-size:11px;font-weight:600;}
+.test-badge{font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.test-item.available .test-badge{background:rgba(0,255,157,0.15);color:var(--accent2);}
+.test-item.unavailable .test-badge{background:rgba(255,107,107,0.15);color:var(--no);}
+.bulk-actions{display:flex;gap:6px;margin-bottom:9px;}
+.btn-bulk{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:10px;}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#0095cc);border:none;color:#000;padding:10px 18px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:13px;font-weight:700;}
+.btn-secondary{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:12px;}
+.btn-sm{background:var(--bg2);border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);font-size:11px;}
+.result-box{margin-top:11px;border-top:1px solid var(--border);padding-top:11px;display:none;}
+pre#result{font-family:var(--font);font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:18px;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;}
+.modal-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.modal-close{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;}
+.form-group{margin-bottom:11px;}
+.form-label{font-size:11px;color:var(--text3);margin-bottom:4px;display:block;}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;outline:none;}
+.form-input:focus{border-color:var(--accent);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.section-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.modal-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;}
+.btn-save{width:100%;background:linear-gradient(135deg,var(--accent),#0095cc);border:none;color:#000;padding:11px;border-radius:var(--radius-sm);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;margin-top:7px;}
+.btn-delete{width:100%;background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.3);color:var(--no);padding:9px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;cursor:pointer;margin-top:5px;}
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(60px);opacity:0;background:var(--accent2);color:#000;padding:9px 18px;border-radius:20px;font-weight:700;font-size:12px;z-index:999;transition:transform 0.3s,opacity 0.3s;pointer-events:none;}
+@media(max-width:480px){.tests-grid{grid-template-columns:repeat(2,1fr);}.reagent-meta{grid-template-columns:1fr 1fr;}}
+::-webkit-scrollbar{width:3px;height:3px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <span class="logo-icon">⬡</span>
+      <div><h1>Lab Manager Pro</h1><p class="subtitle">نظام إدارة المختبر المتكامل</p></div>
+    </div>
+    <span class="alert-badge" id="globalAlertBadge"></span>
+  </div>
+</header>
+
+<div class="page active" id="page-home">
+  <div class="card">
+    <div class="card-title">تغطية الأجهزة</div>
+    <div id="homeCoverage"></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 13px 0;">
+      <span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">📦 المحاليل والكواشف</span>
+      <button class="btn-sm" onclick="openAddSupply()">+ إضافة</button>
+    </div>
+    <div class="home-tabs-nav" id="homeTabsNav" style="margin-top:10px;border-radius:0;"></div>
+    <div id="homeTabsContent"></div>
+  </div>
+</div>
+
+<div class="page" id="page-analysis">
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="tab-nav-dev" id="analysisTabNav"></div>
+    <div id="analysisTabContent"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔍 التحليل الذكي</div>
+    <div class="action-row">
+      <button class="btn-primary" onclick="analyze()">تحليل الوضع</button>
+      <button class="btn-secondary" onclick="openReportOptions()">تقرير كامل</button>
+      <button class="btn-secondary" onclick="copyReport()">نسخ</button>
+    </div>
+    <div class="result-box" id="resultWrapper"><pre id="result"></pre></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('home')" id="nav-home"><span class="nav-icon">🏠</span><span>الرئيسية</span></button>
+  <button class="nav-btn" onclick="showPage('analysis')" id="nav-analysis"><span class="nav-icon">📊</span><span>تحليل</span></button>
+</nav>
+
+<div class="modal-overlay" id="reportModalOverlay" onclick="closeReportModal(event)">
+  <div class="modal">
+    <div class="modal-title"><span>📋 خيارات التقرير</span><button class="modal-close" onclick="closeReportModalDirect()">✕</button></div>
+    <div class="modal-section-title">محتوى التقرير</div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);"><input type="checkbox" id="rOptCoverage" checked style="width:16px;height:16px;accent-color:var(--accent);"><span style="font-size:13px;">📊 تغطية الأجهزة والاختبارات</span></label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);"><input type="checkbox" id="rOptAlerts" checked style="width:16px;height:16px;accent-color:var(--accent);"><span style="font-size:13px;">⚠️ المواد التي تحتاج انتباهاً</span></label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);"><input type="checkbox" id="rOptInfo" checked style="width:16px;height:16px;accent-color:var(--accent);"><span style="font-size:13px;">🏥 بيانات المنشأة والفني</span></label>
+    </div>
+    <div class="modal-section-title">إجراء</div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      <button onclick="generateReport()" style="background:linear-gradient(135deg,var(--accent),#0095cc);border:none;color:#000;padding:11px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;">📄 عرض التقرير</button>
+      <button onclick="printReport()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;cursor:pointer;">🖨️ طباعة A4</button>
+      <button onclick="shareReport()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;cursor:pointer;">📤 مشاركة</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title"><span id="modalTitle">إضافة / تعديل</span><button class="modal-close" onclick="closeModalDirect()">✕</button></div>
+    <div class="modal-section-title">📦 معلومات المادة</div>
+    <div class="form-group"><label class="form-label">الاسم</label><input class="form-input" id="fName" placeholder="مثال: GLU"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">النوع</label>
+        <select class="form-input" id="fType">
+          <option value="Reagent">Reagent — كاشف</option>
+          <option value="Calibrator">Calibrator — معايرة</option>
+          <option value="QC">QC — ضبط الجودة</option>
+          <option value="Solution">Solution — محلول تشغيل</option>
+          <option value="Part">Part — قطعة</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">الجهاز (نقل)</label>
+        <select class="form-input" id="fDevice">
+          <option value="dimension">Dimension EXL 200</option>
+          <option value="cobas_pure">Cobas Pure (C303+e402)</option>
+          <option value="cobas_c311">Cobas c311</option>
+          <option value="cobas_e411">Cobas e411</option>
+          <option value="atellica">Siemens Atellica</option>
+          <option value="stratus">Stratus CS 200</option>
+          <option value="vidas">Mini VIDAS</option>
+          <option value="variant">VARIANT II</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Lot#</label><input class="form-input" id="fLot" placeholder="اختياري"></div>
+      <div class="form-group"><label class="form-label">تاريخ الانتهاء</label><input class="form-input" id="fExpiry" type="date"></div>
+    </div>
+    <hr class="section-divider">
+    <div class="modal-section-title">📊 المخزون</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">الكمية (كتات)</label><input class="form-input" id="fQty" type="number" min="0" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">حد التنبيه</label><input class="form-input" id="fMinQty" type="number" min="0" placeholder="5"></div>
+    </div>
+    <hr class="section-divider">
+    <div class="modal-section-title">⏱ تتبع الكتة الحالية</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">تاريخ الفتح</label><input class="form-input" id="fOpenDate" type="date"></div>
+      <div class="form-group"><label class="form-label">عمر الكتة (يوم)</label><input class="form-input" id="fKitDays" type="number" min="1" placeholder="14"></div>
+    </div>
+    <p style="font-size:10px;color:var(--text3);margin-top:-6px;margin-bottom:10px;">أسبوعان=14 | 3 أسابيع=21 | شهر=30</p>
+    <div class="form-group"><label class="form-label">ملاحظة</label><input class="form-input" id="fNote" placeholder="اختياري"></div>
+    <button class="btn-save" onclick="saveItem()">💾 حفظ</button>
+    <button class="btn-delete" id="btnDelete" style="display:none;" onclick="confirmDelete()">🗑 حذف</button>
+    <div id="deleteConfirm" style="display:none;margin-top:8px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.35);border-radius:8px;padding:11px;text-align:center;">
+      <p style="font-size:13px;margin-bottom:9px;">هل أنت متأكد من الحذف؟</p>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button onclick="doDelete()" style="background:var(--no);border:none;color:#fff;padding:7px 18px;border-radius:6px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;">نعم، احذف</button>
+        <button onclick="cancelDelete()" style="background:var(--bg);border:1px solid var(--border);color:var(--text2);padding:7px 18px;border-radius:6px;font-family:var(--font);font-size:13px;cursor:pointer;">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var DEFAULT_KIT_DAYS={GLU:14,HbA1c:21,UREA:14,CREA:14,UA:21,"Microalbumin ACR":30,NH3:30,HCO3:30,TP:21,ALB:21,ALT:21,AST:21,TBIL:21,DBIL:30,GGT:21,ALP:21,CHE:30,LIP:21,AMY:21,LDH:21,CK:14,"CK-MB":14,CHOL:14,TG:14,HDL:14,LDL:14,Na:30,K:30,Cl:30,Ca:21,PHOS:21,Mg:21,"Fe-Iron":21,UIBC:21,CRP:14,Procalcitonin:30,TnT:14,TnI:14,"NT-proBNP":30,TSH:21,FT4:21,FT3:21,LH:21,FSH:21,Prolactin:21,Testosterone:21,Estradiol:21,Progesterone:21,Cortisol:21,"DHEA-S":30,PTH:30,Insulin:21,"C-peptide":30,"Vitamin B12":21,"Vitamin D":21,Folate:30,Ferritin:21,AFP:21,"CA-125":21,"CA 15-3":21,"CA 19-9":21,"CA 72-3":21,CEA:21,PSA:21,"HCG-Beta":14,"Troponin I TestPak":14,"bHCG Kit":14};
+function getDefaultKitDays(n,t){for(var k in DEFAULT_KIT_DAYS){if(n.indexOf(k)!==-1)return DEFAULT_KIT_DAYS[k];}if(t==="QC")return 30;if(t==="Calibrator")return 60;if(t==="Solution")return 30;if(t==="Part")return 90;return 21;}
+var CHEM_CATS={"السكر والكلى":["GLU","HbA1c","UREA","CREA","UA","Microalbumin ACR","NH3","HCO3"],"البروتينات والكبد":["TP","ALB","ALT","AST","TBIL","DBIL","GGT","ALP","CHE"],"إنزيمات أخرى":["LIP","AMY","LDH","CK","CK-MB"],"الدهنيات":["CHOL","TG","HDL","LDL"],"الإلكتروليتات والمعادن":["Na","K","Cl","Ca","PHOS","Mg"],"الحديد والالتهاب":["Fe-Iron","UIBC","CRP","Procalcitonin"],"قلبية":["TnT","TnI","NT-proBNP"]};
+var HORMONE_CATS={"الغدة الدرقية":["TSH","FT4","FT3"],"هرمونات التكاثر":["LH","FSH","Prolactin","Testosterone","Estradiol-E2","Progesterone"],"هرمونات أخرى":["Cortisol-AM","DHEA-S","PTH","Insulin","C-peptide"],"الفيتامينات":["Vitamin-B12","Vitamin-D","Folate","Ferritin"],"مؤشرات الأورام":["AFP","CA-125","CA-15-3","CA-19-9","CA-72-3","CEA","PSA"],"طوارئ":["HCG-Beta","Troponin"]};
+var DIM_CATS={"السكر والإنزيمات":["GLU","HbA1c","UREA","CREA","UA","TP","ALB","ALT","AST","TBIL","DBIL","AMY","LIP","GGT","ALP","CK","CK-MB","LDH"],"الدهنيات":["CHOL","TG","HDL","LDL"],"المعادن والالتهاب":["Ca","PHOS","Mg","Fe-Iron","IBCT","NH3","CRP"],"الإلكتروليتات":["Na","K","Cl"]};
+var ATELLICA_CATS=(function(){var r={};for(var k in CHEM_CATS)r[k]=CHEM_CATS[k];for(var k in HORMONE_CATS)r[k]=HORMONE_CATS[k];return r;})();
+var ANALYSIS_DEVICES={dimension:{name:"Dimension EXL 200",short:"EXL200",type:"chem",typeLabel:"كيمياء",typeBadge:"badge-chem",categories:DIM_CATS},atellica:{name:"Siemens Atellica",short:"Atellica",type:"both",typeLabel:"كيمياء+هرمون",typeBadge:"badge-both",categories:ATELLICA_CATS},c311:{name:"Cobas c311",short:"c311",type:"chem",typeLabel:"كيمياء",typeBadge:"badge-chem",categories:CHEM_CATS},c303:{name:"Cobas C303",short:"C303",type:"chem",typeLabel:"كيمياء",typeBadge:"badge-chem",categories:CHEM_CATS},e402:{name:"Cobas e402",short:"e402",type:"hormone",typeLabel:"هرمون",typeBadge:"badge-hormone",categories:HORMONE_CATS},e411:{name:"Cobas e411",short:"e411",type:"hormone",typeLabel:"هرمون",typeBadge:"badge-hormone",categories:HORMONE_CATS},stratus:{name:"Stratus CS 200",short:"Stratus",type:"emergency",typeLabel:"طوارئ",typeBadge:"badge-emergency",categories:{"طوارئ قلبية":["Troponin-I","bHCG"]}},vidas:{name:"Mini VIDAS",short:"VIDAS",type:"emergency",typeLabel:"طوارئ",typeBadge:"badge-emergency",categories:{"طوارئ":["Troponin-I","bHCG"]}},variant:{name:"VARIANT II",short:"VARIANT",type:"chem",typeLabel:"HbA1c",typeBadge:"badge-chem",categories:{"HbA1c":["HbA1c"]}}};
+var SUPPLY_DEVICES={dimension:{label:"Dimension EXL 200"},cobas_pure:{label:"Cobas Pure (C303+e402)"},cobas_c311:{label:"Cobas c311"},cobas_e411:{label:"Cobas e411"},atellica:{label:"Siemens Atellica"},stratus:{label:"Stratus CS 200"},vidas:{label:"Mini VIDAS"},variant:{label:"VARIANT II"}};
+var CHIP={dimension:"EXL200",cobas_pure:"C303+e402",cobas_c311:"c311",cobas_e411:"e411",atellica:"Atellica",stratus:"Stratus",vidas:"VIDAS",variant:"VARIANT"};
+var TYPE_ICON={Reagent:"🧪",Calibrator:"⚖️",QC:"🔬",Solution:"💧",Part:"⚙️"};
+var TYPE_AR={Reagent:"كاشف",Calibrator:"معايرة",QC:"ضبط جودة",Solution:"محلول تشغيل",Part:"قطعة / إلكترود"};
+var DS={dimension:[{t:"Reagent",n:"GLU"},{t:"Reagent",n:"HbA1c"},{t:"Reagent",n:"UREA"},{t:"Reagent",n:"CREA"},{t:"Reagent",n:"UA"},{t:"Reagent",n:"TP"},{t:"Reagent",n:"ALB"},{t:"Reagent",n:"ALT"},{t:"Reagent",n:"AST"},{t:"Reagent",n:"TBIL"},{t:"Reagent",n:"DBIL"},{t:"Reagent",n:"AMY"},{t:"Reagent",n:"LIP"},{t:"Reagent",n:"GGT"},{t:"Reagent",n:"ALP"},{t:"Reagent",n:"CHOL"},{t:"Reagent",n:"TG"},{t:"Reagent",n:"HDL"},{t:"Reagent",n:"LDL"},{t:"Reagent",n:"CK"},{t:"Reagent",n:"CK-MB"},{t:"Reagent",n:"LDH"},{t:"Reagent",n:"Ca"},{t:"Reagent",n:"PHOS"},{t:"Reagent",n:"Mg"},{t:"Reagent",n:"Fe-Iron"},{t:"Reagent",n:"IBCT"},{t:"Reagent",n:"NH3"},{t:"Calibrator",n:"Enz Cal CK-MB"},{t:"Calibrator",n:"Multi Calibrator 2"},{t:"Calibrator",n:"ALP Cal"},{t:"Calibrator",n:"ALT Calibrator"},{t:"Calibrator",n:"TP/ALB Cal"},{t:"Calibrator",n:"Bil T/D Cal"},{t:"Calibrator",n:"Chem 1 Cal"},{t:"Calibrator",n:"Iron Cal"},{t:"Calibrator",n:"AMM Cal"},{t:"Calibrator",n:"Lipase Cal"},{t:"Calibrator",n:"Verify Enz"},{t:"Calibrator",n:"Chek Lyte Solution"},{t:"Part",n:"Sensor"},{t:"QC",n:"QC Level 2 & 3"},{t:"QC",n:"A1c Control"},{t:"QC",n:"CRP Control"},{t:"Solution",n:"Standard A"},{t:"Solution",n:"Standard B"},{t:"Solution",n:"Standard F"},{t:"Solution",n:"Salt"},{t:"Solution",n:"Diluent"}],cobas_pure:[{t:"Reagent",n:"GLU"},{t:"Reagent",n:"HbA1c"},{t:"Reagent",n:"UREA"},{t:"Reagent",n:"CREA"},{t:"Reagent",n:"UA"},{t:"Reagent",n:"TP"},{t:"Reagent",n:"ALB"},{t:"Reagent",n:"ALT"},{t:"Reagent",n:"AST"},{t:"Reagent",n:"TBIL"},{t:"Reagent",n:"DBIL"},{t:"Reagent",n:"LIP"},{t:"Reagent",n:"AMY"},{t:"Reagent",n:"GGT"},{t:"Reagent",n:"ALP"},{t:"Reagent",n:"CHOL"},{t:"Reagent",n:"TG"},{t:"Reagent",n:"HDL"},{t:"Reagent",n:"LDL"},{t:"Reagent",n:"CK"},{t:"Reagent",n:"CK-MB"},{t:"Reagent",n:"LDH"},{t:"Reagent",n:"Ca"},{t:"Reagent",n:"PHOS"},{t:"Reagent",n:"Mg"},{t:"Reagent",n:"Fe-Iron"},{t:"Reagent",n:"UIBC"},{t:"Reagent",n:"NH3"},{t:"Reagent",n:"Microalbumin ACR"},{t:"Reagent",n:"CRP"},{t:"Reagent",n:"Procalcitonin"},{t:"Reagent",n:"CHE"},{t:"Reagent",n:"HCO3"},{t:"Reagent",n:"TSH"},{t:"Reagent",n:"FT4"},{t:"Reagent",n:"FT3"},{t:"Reagent",n:"HCG-Beta"},{t:"Reagent",n:"Prolactin"},{t:"Reagent",n:"LH"},{t:"Reagent",n:"FSH"},{t:"Reagent",n:"Testosterone (Total)"},{t:"Reagent",n:"Estradiol (E2)"},{t:"Reagent",n:"Progesterone"},{t:"Reagent",n:"Cortisol (AM)"},{t:"Reagent",n:"DHEA-S"},{t:"Reagent",n:"PTH"},{t:"Reagent",n:"Insulin (Fasting)"},{t:"Reagent",n:"C-peptide"},{t:"Reagent",n:"PSA (Total)"},{t:"Reagent",n:"Vitamin B12"},{t:"Reagent",n:"Vitamin D Total"},{t:"Reagent",n:"Folate"},{t:"Reagent",n:"Ferritin"},{t:"Reagent",n:"AFP"},{t:"Reagent",n:"CA-125"},{t:"Reagent",n:"CA 15-3"},{t:"Reagent",n:"CA 19-9"},{t:"Reagent",n:"CA 72-3"},{t:"Reagent",n:"CEA"},{t:"Reagent",n:"TnT"},{t:"Reagent",n:"NT-proBNP"},{t:"Part",n:"Na Electrode"},{t:"Part",n:"K Electrode"},{t:"Part",n:"REF Electrode"},{t:"Part",n:"Cl Electrode"},{t:"Solution",n:"ProCell 2M"},{t:"Solution",n:"PreClean 2M"},{t:"Solution",n:"CleanCell Wash 1"},{t:"Solution",n:"CleanCell Wash 2"},{t:"Solution",n:"CleanCell M"},{t:"Solution",n:"ISE Inter Standard"},{t:"Solution",n:"ISE Diluent G2"},{t:"Solution",n:"ISE REF Electrolyte"},{t:"Solution",n:"Basic Wash"},{t:"Solution",n:"Acid Wash"},{t:"Calibrator",n:"CFAS"},{t:"Calibrator",n:"MB Cal"},{t:"Calibrator",n:"Protein Cal"},{t:"Calibrator",n:"Fe Cal"},{t:"Calibrator",n:"Lipid Cal"},{t:"Calibrator",n:"A1c Cal"},{t:"Calibrator",n:"PUC Cal"},{t:"Calibrator",n:"AMM Cal"},{t:"Calibrator",n:"ISE Low Cal"},{t:"Calibrator",n:"ISE High Cal"},{t:"QC",n:"PreciControl TM L1"},{t:"QC",n:"PreciControl TM L2"},{t:"QC",n:"PreciControl Vit-D"},{t:"QC",n:"PCC1"},{t:"QC",n:"PCC2"}],cobas_c311:[{t:"Reagent",n:"GLU"},{t:"Reagent",n:"HbA1c"},{t:"Reagent",n:"UREA"},{t:"Reagent",n:"CREA"},{t:"Reagent",n:"UA"},{t:"Reagent",n:"TP"},{t:"Reagent",n:"ALB"},{t:"Reagent",n:"ALT"},{t:"Reagent",n:"AST"},{t:"Reagent",n:"TBIL"},{t:"Reagent",n:"DBIL"},{t:"Reagent",n:"LIP"},{t:"Reagent",n:"AMY"},{t:"Reagent",n:"GGT"},{t:"Reagent",n:"ALP"},{t:"Reagent",n:"CHOL"},{t:"Reagent",n:"TG"},{t:"Reagent",n:"HDL"},{t:"Reagent",n:"LDL"},{t:"Reagent",n:"CK"},{t:"Reagent",n:"CK-MB"},{t:"Reagent",n:"LDH"},{t:"Reagent",n:"Ca"},{t:"Reagent",n:"PHOS"},{t:"Reagent",n:"Mg"},{t:"Reagent",n:"Fe-Iron"},{t:"Reagent",n:"UIBC"},{t:"Reagent",n:"NH3"},{t:"Reagent",n:"Microalbumin ACR"},{t:"Reagent",n:"CRP"},{t:"Reagent",n:"Procalcitonin"},{t:"Reagent",n:"CHE"},{t:"Reagent",n:"HCO3"},{t:"Part",n:"Na Electrode"},{t:"Part",n:"K Electrode"},{t:"Part",n:"REF Electrode"},{t:"Part",n:"Cl Electrode"},{t:"Solution",n:"ISE Inter Standard"},{t:"Solution",n:"ISE Diluent G2"},{t:"Solution",n:"ISE REF Electrolyte"},{t:"Solution",n:"Basic Wash"},{t:"Solution",n:"Acid Wash"},{t:"Calibrator",n:"CFAS"},{t:"Calibrator",n:"MB Cal"},{t:"Calibrator",n:"Protein Cal"},{t:"Calibrator",n:"Fe Cal"},{t:"Calibrator",n:"Lipid Cal"},{t:"Calibrator",n:"A1c Cal"},{t:"Calibrator",n:"ISE Low Cal"},{t:"Calibrator",n:"ISE High Cal"},{t:"QC",n:"Control V"},{t:"QC",n:"Control U"},{t:"QC",n:"Control MM"},{t:"QC",n:"PCC1"},{t:"QC",n:"PCC2"}],cobas_e411:[{t:"Reagent",n:"TSH"},{t:"Reagent",n:"FT4"},{t:"Reagent",n:"FT3"},{t:"Reagent",n:"HCG-Beta"},{t:"Reagent",n:"Prolactin"},{t:"Reagent",n:"LH"},{t:"Reagent",n:"FSH"},{t:"Reagent",n:"Testosterone (Total)"},{t:"Reagent",n:"Estradiol (E2)"},{t:"Reagent",n:"Progesterone"},{t:"Reagent",n:"Cortisol (AM)"},{t:"Reagent",n:"DHEA-S"},{t:"Reagent",n:"PTH"},{t:"Reagent",n:"Insulin (Fasting)"},{t:"Reagent",n:"C-peptide"},{t:"Reagent",n:"PSA (Total)"},{t:"Reagent",n:"Vitamin B12"},{t:"Reagent",n:"Vitamin D Total"},{t:"Reagent",n:"Folate"},{t:"Reagent",n:"Ferritin"},{t:"Reagent",n:"AFP"},{t:"Reagent",n:"CA-125"},{t:"Reagent",n:"CA 15-3"},{t:"Reagent",n:"CA 19-9"},{t:"Reagent",n:"CA 72-3"},{t:"Reagent",n:"CEA"},{t:"Reagent",n:"TnT"},{t:"Reagent",n:"TnI"},{t:"Reagent",n:"NT-proBNP"},{t:"Solution",n:"ProCell 2M"},{t:"Solution",n:"PreClean 2M"},{t:"Solution",n:"CleanCell Wash 1"},{t:"Solution",n:"CleanCell Wash 2"},{t:"Solution",n:"CleanCell M"},{t:"Calibrator",n:"CFAS"},{t:"Calibrator",n:"PUC Cal"},{t:"Calibrator",n:"AMM Cal"},{t:"QC",n:"PreciControl TM L1"},{t:"QC",n:"PreciControl TM L2"},{t:"QC",n:"PreciControl Vit-D"},{t:"QC",n:"PCC1"},{t:"QC",n:"PCC2"}],atellica:[{t:"Reagent",n:"GLU"},{t:"Reagent",n:"HbA1c"},{t:"Reagent",n:"UREA"},{t:"Reagent",n:"CREA"},{t:"Reagent",n:"UA"},{t:"Reagent",n:"TP"},{t:"Reagent",n:"ALB"},{t:"Reagent",n:"ALT"},{t:"Reagent",n:"AST"},{t:"Reagent",n:"TBIL"},{t:"Reagent",n:"DBIL"},{t:"Reagent",n:"AMY"},{t:"Reagent",n:"LIP"},{t:"Reagent",n:"GGT"},{t:"Reagent",n:"ALP"},{t:"Reagent",n:"CHOL"},{t:"Reagent",n:"TG"},{t:"Reagent",n:"HDL"},{t:"Reagent",n:"LDL"},{t:"Reagent",n:"CK"},{t:"Reagent",n:"CK-MB"},{t:"Reagent",n:"LDH"},{t:"Reagent",n:"Ca"},{t:"Reagent",n:"PHOS"},{t:"Reagent",n:"Mg"},{t:"Reagent",n:"Fe-Iron"},{t:"Reagent",n:"IBCT"},{t:"Reagent",n:"NH3"},{t:"Reagent",n:"CRP"},{t:"Reagent",n:"TSH"},{t:"Reagent",n:"FT4"},{t:"Reagent",n:"FT3"},{t:"Reagent",n:"LH"},{t:"Reagent",n:"FSH"},{t:"Reagent",n:"Prolactin"},{t:"Reagent",n:"Testosterone"},{t:"Reagent",n:"Estradiol-E2"},{t:"Reagent",n:"Progesterone"},{t:"Reagent",n:"Cortisol"},{t:"Reagent",n:"Insulin"},{t:"Reagent",n:"HCG-Beta"},{t:"Reagent",n:"AFP"},{t:"Reagent",n:"PSA"},{t:"Reagent",n:"CA-125"},{t:"Reagent",n:"CEA"},{t:"Reagent",n:"Troponin"},{t:"Calibrator",n:"Enz Cal CK-MB"},{t:"Calibrator",n:"Multi Calibrator 2"},{t:"Calibrator",n:"ALP Cal"},{t:"Calibrator",n:"ALT Calibrator"},{t:"Calibrator",n:"TP/ALB Cal"},{t:"Calibrator",n:"Bil T/D Cal"},{t:"Calibrator",n:"Chem 1 Cal"},{t:"Calibrator",n:"Iron Cal"},{t:"Calibrator",n:"AMM Cal"},{t:"Calibrator",n:"Lipase Cal"},{t:"Calibrator",n:"Verify Enz"},{t:"Calibrator",n:"Chek Lyte Solution"},{t:"Part",n:"Sensor"},{t:"QC",n:"QC Level 2 & 3"},{t:"QC",n:"A1c Control"},{t:"QC",n:"CRP Control"},{t:"Solution",n:"Standard A"},{t:"Solution",n:"Standard B"},{t:"Solution",n:"Standard F"},{t:"Solution",n:"Salt"},{t:"Solution",n:"Diluent"}],stratus:[{t:"Reagent",n:"Troponin I TestPak"},{t:"Calibrator",n:"Troponin Calibrator"},{t:"QC",n:"Cardiac Control"},{t:"Reagent",n:"bHCG Kit"},{t:"Calibrator",n:"bHCG Calibrator"},{t:"QC",n:"bHCG Control QC1 & QC2"}],vidas:[{t:"Reagent",n:"bHCG Kit"},{t:"Calibrator",n:"bHCG Calibrator S1"},{t:"QC",n:"bHCG Control QC1"},{t:"Reagent",n:"Troponin I TestPak"},{t:"Calibrator",n:"Troponin Calibrator"},{t:"QC",n:"Cardiac Control"}],variant:[{t:"Reagent",n:"HbA1c Kit"},{t:"Calibrator",n:"Calibrator D1 / D2"},{t:"QC",n:"HbA1c Control L1 / L2"}]};
+var REPORT_INFO={name:"سعد علي سعد القرني",title:"فني مختبر",facility:"تجمع عسير الصحي - مستشفى سبت العلايه",dept:"المختبر - قسم الكيمياء الحيويه"};
+var WARN_DAYS=30,WARN_KIT_DAYS=7;
+var testStatus={},supplyData={};
+var curHomeDev="cobas_pure",editingItem=null;
+var ANALYSIS_TO_SUPPLY={dimension:"dimension",atellica:"atellica",c311:"cobas_c311",c303:"cobas_pure",e402:"cobas_pure",e411:"cobas_e411",stratus:"stratus",vidas:"vidas",variant:"variant"};
+function getStatus(item){var today=new Date();today.setHours(0,0,0,0);var s="ok";var reasons=[];if(Number(item.minQty)>0&&Number(item.qty)<=Number(item.minQty)){s="orange";reasons.push("مخزون منخفض");}if(item.expiry){var exp=new Date(item.expiry);exp.setHours(0,0,0,0);var diff=Math.floor((exp-today)/86400000);if(diff<0){s="red";reasons.push("انتهت الصلاحية");}else if(diff<=WARN_DAYS&&s!=="red"){s="yellow";reasons.push("صلاحية: بعد "+diff+" يوم");}}if(item.openDate&&item.kitDays&&Number(item.kitDays)>0){var opened=new Date(item.openDate);opened.setHours(0,0,0,0);var kitEnd=new Date(opened.getTime()+Number(item.kitDays)*86400000);var dl=Math.floor((kitEnd-today)/86400000);if(dl<0){s="red";reasons.push("الكتة نفدت");}else if(dl<=WARN_KIT_DAYS&&s!=="red"){s="yellow";reasons.push("باقي "+dl+"ي للكتة");}}return{status:s,reasons:reasons};}
+function getKitProgress(item){if(!item.openDate||!item.kitDays||Number(item.kitDays)<=0)return null;var today=new Date();today.setHours(0,0,0,0);var opened=new Date(item.openDate);opened.setHours(0,0,0,0);var total=Number(item.kitDays);var elapsed=Math.floor((today-opened)/86400000);var remaining=total-elapsed;return{remaining:remaining,total:total,pct:Math.max(0,Math.min(100,Math.round(remaining/total*100)))};}
+function pill(s){if(s==="red")return'<span class="status-pill pill-red">تنبيه ❌</span>';if(s==="yellow")return'<span class="status-pill pill-yellow">قارب ⚠️</span>';if(s==="orange")return'<span class="status-pill pill-orange">مخزون ↓</span>';return'<span class="status-pill pill-ok">جيد ✓</span>';}
+function expiryText(e){if(!e)return"—";var t=new Date();t.setHours(0,0,0,0);var x=new Date(e);x.setHours(0,0,0,0);var d=Math.floor((x-t)/86400000);if(d<0)return"منتهي منذ "+Math.abs(d)+"ي";if(d===0)return"اليوم!";return"بعد "+d+"ي";}
+function init(){var sv=loadAll();for(var d in ANALYSIS_DEVICES){testStatus[d]={};var cats=ANALYSIS_DEVICES[d].categories;for(var cat in cats)cats[cat].forEach(function(t){testStatus[d][t]=(sv.ts&&sv.ts[d]&&sv.ts[d][t]!==undefined)?sv.ts[d][t]:"yes";});}for(var d in SUPPLY_DEVICES){if(sv.sd&&sv.sd[d]){supplyData[d]=sv.sd[d];}else{supplyData[d]=(DS[d]||[]).map(function(r,i){return{id:d+"_"+i,name:r.n,type:r.t,lot:"",expiry:"",qty:0,minQty:r.t==="Part"?1:5,openDate:"",kitDays:getDefaultKitDays(r.n,r.t),note:""};});}}buildHomeSupplyTabs();buildAnalysisTabs();refreshHome();}
+function showPage(p){document.querySelectorAll(".page").forEach(function(e){e.classList.remove("active");});document.querySelectorAll(".nav-btn").forEach(function(e){e.classList.remove("active");});document.getElementById("page-"+p).classList.add("active");document.getElementById("nav-"+p).classList.add("active");refreshHome();}
+function refreshHome(){var tot=0;for(var d in SUPPLY_DEVICES){(supplyData[d]||[]).forEach(function(i){if(getStatus(i).status!=="ok")tot++;});}var badge=document.getElementById("globalAlertBadge");if(tot>0){badge.textContent=tot+" تنبيه";badge.classList.add("show");}else{badge.classList.remove("show");}var cov=document.getElementById("homeCoverage");if(cov){cov.innerHTML=Object.keys(ANALYSIS_DEVICES).map(function(d){var ts=getDevTests(d);var av=ts.filter(function(t){return testStatus[d][t]==="yes";}).length;var p=ts.length?Math.round(av/ts.length*100):0;return'<div class="coverage-row"><div class="cov-label">'+ANALYSIS_DEVICES[d].short+'</div><div class="cov-track"><div class="cov-fill" style="width:'+p+'%"></div></div><div class="cov-pct">'+av+'/'+ts.length+'</div></div>';}).join("");}renderHomeTab(curHomeDev);}
+function buildHomeSupplyTabs(){var nav=document.getElementById("homeTabsNav");var con=document.getElementById("homeTabsContent");nav.innerHTML="";con.innerHTML="";Object.keys(SUPPLY_DEVICES).forEach(function(d){var btn=document.createElement("button");btn.className="home-tab-btn"+(d===curHomeDev?" active":"");btn.textContent=CHIP[d]||d;btn.id="htab-btn-"+d;btn.onclick=function(){curHomeDev=d;document.querySelectorAll(".home-tab-btn").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".home-tab-content").forEach(function(c){c.classList.remove("active");});btn.classList.add("active");document.getElementById("htab-"+d).classList.add("active");renderHomeTab(d);};nav.appendChild(btn);var tab=document.createElement("div");tab.id="htab-"+d;tab.className="home-tab-content"+(d===curHomeDev?" active":"");con.appendChild(tab);});renderHomeTab(curHomeDev);}
+function renderHomeTab(d){var tab=document.getElementById("htab-"+d);if(!tab)return;var items=supplyData[d]||[];var groups={Reagent:[],Calibrator:[],QC:[],Solution:[],Part:[]};items.forEach(function(i){if(groups[i.type])groups[i.type].push(i);else groups.Reagent.push(i);});var total=items.length;var alCount=items.filter(function(i){return getStatus(i).status!=="ok";}).length;var html='<div class="tab-actions"><span class="tab-dev-title">'+SUPPLY_DEVICES[d].label+'</span><span class="tab-dev-count"><span>'+total+'</span> مادة'+(alCount>0?' · <span style="color:var(--no);">'+alCount+' تنبيه</span>':'')+'</span></div>';if(!items.length){html+='<p style="color:var(--text3);font-size:12px;text-align:center;padding:16px;">لا توجد بيانات</p>';tab.innerHTML=html;return;}Object.keys(groups).forEach(function(t){var arr=groups[t];if(!arr.length)return;html+='<div class="section-header">'+TYPE_ICON[t]+" "+TYPE_AR[t]+" ("+arr.length+')</div><div class="reagent-list">';arr.forEach(function(item){var r=getStatus(item);var s=r.status;var kp=getKitProgress(item);html+='<div class="reagent-item status-'+s+'" onclick="editSupplyItem(\''+d+'\',\''+item.id+'\')">';html+='<div class="reagent-top"><div><div class="reagent-name">'+item.name+'</div><div class="reagent-type">'+TYPE_AR[item.type]+'</div></div>'+pill(s)+'</div>';if(kp!==null){var bc=kp.pct>40?"green":kp.pct>15?"yellow":"red";var dt=kp.remaining<=0?"نفدت!":"باقي "+kp.remaining+"ي";html+='<div class="kit-progress"><div class="kit-progress-label"><span class="kpl-text">الكتة</span><span class="kpl-days '+bc+'">'+dt+'</span></div><div class="kit-bar-track"><div class="kit-bar-fill '+bc+'" style="width:'+kp.pct+'%"></div></div></div>';}html+='<div class="reagent-meta"><div class="meta-field"><div class="meta-label">مخزون</div><div class="meta-val">'+item.qty+'</div></div><div class="meta-field"><div class="meta-label">صلاحية</div><div class="meta-val">'+expiryText(item.expiry)+'</div></div><div class="meta-field"><div class="meta-label">Lot#</div><div class="meta-val">'+(item.lot||"—")+'</div></div></div></div>';});html+='</div>';});tab.innerHTML=html;}
+function openAddSupply(){editingItem={dev:curHomeDev,id:null};document.getElementById("modalTitle").textContent="إضافة — "+SUPPLY_DEVICES[curHomeDev].label;clearForm();document.getElementById("fDevice").value=curHomeDev;document.getElementById("btnDelete").style.display="none";openModal();}
+function editSupplyItem(dev,id){var arr=supplyData[dev]||[];var item=null;for(var i=0;i<arr.length;i++){if(arr[i].id===id){item=arr[i];break;}}if(!item)return;editingItem={dev:dev,id:id};document.getElementById("modalTitle").textContent="تعديل: "+item.name;document.getElementById("fName").value=item.name||"";document.getElementById("fType").value=item.type||"Reagent";document.getElementById("fDevice").value=dev;document.getElementById("fLot").value=item.lot||"";document.getElementById("fExpiry").value=item.expiry||"";document.getElementById("fQty").value=item.qty!==undefined?item.qty:"";document.getElementById("fMinQty").value=item.minQty!==undefined?item.minQty:"";document.getElementById("fOpenDate").value=item.openDate||"";document.getElementById("fKitDays").value=item.kitDays!==undefined?item.kitDays:"";document.getElementById("fNote").value=item.note||"";document.getElementById("btnDelete").style.display="block";openModal();}
+function clearForm(){["fName","fLot","fExpiry","fQty","fMinQty","fOpenDate","fKitDays","fNote"].forEach(function(f){document.getElementById(f).value="";});document.getElementById("fType").value="Reagent";document.getElementById("fDevice").value=curHomeDev;}
+function openModal(){document.getElementById("deleteConfirm").style.display="none";document.getElementById("btnDelete").style.display=(editingItem&&editingItem.id)?"block":"none";document.getElementById("modalOverlay").classList.add("open");}
+function closeModalDirect(){document.getElementById("modalOverlay").classList.remove("open");}
+function closeModal(e){if(e.target===document.getElementById("modalOverlay"))closeModalDirect();}
+function saveItem(){var name=document.getElementById("fName").value.trim();if(!name){showToast("أدخل اسم المادة");return;}var ei=editingItem;if(!ei){showToast("خطأ");return;}var newDev=document.getElementById("fDevice").value;var newObj={name:name,type:document.getElementById("fType").value,lot:document.getElementById("fLot").value.trim(),expiry:document.getElementById("fExpiry").value,qty:Number(document.getElementById("fQty").value)||0,minQty:Number(document.getElementById("fMinQty").value)||0,openDate:document.getElementById("fOpenDate").value,kitDays:Number(document.getElementById("fKitDays").value)||getDefaultKitDays(name,document.getElementById("fType").value),note:document.getElementById("fNote").value.trim()};if(ei.id){if(newDev!==ei.dev){supplyData[ei.dev]=(supplyData[ei.dev]||[]).filter(function(r){return r.id!==ei.id;});newObj.id=newDev+"_"+Date.now();if(!supplyData[newDev])supplyData[newDev]=[];supplyData[newDev].push(newObj);showToast("✓ نُقل إلى "+SUPPLY_DEVICES[newDev].label);}else{var newArr=[];var arr=supplyData[ei.dev]||[];for(var i=0;i<arr.length;i++){if(arr[i].id===ei.id){newObj.id=arr[i].id;newArr.push(newObj);}else{newArr.push(arr[i]);}}supplyData[ei.dev]=newArr;showToast("✓ تم الحفظ");}}else{newObj.id=newDev+"_"+Date.now();if(!supplyData[newDev])supplyData[newDev]=[];supplyData[newDev].push(newObj);showToast("✓ تمت الإضافة");}curHomeDev=newDev;document.querySelectorAll(".home-tab-btn").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".home-tab-content").forEach(function(c){c.classList.remove("active");});var ab=document.getElementById("htab-btn-"+newDev);var at=document.getElementById("htab-"+newDev);if(ab)ab.classList.add("active");if(at)at.classList.add("active");saveAll();closeModalDirect();buildAnalysisTabs();refreshHome();}
+function confirmDelete(){document.getElementById("deleteConfirm").style.display="block";document.getElementById("btnDelete").style.display="none";}
+function cancelDelete(){document.getElementById("deleteConfirm").style.display="none";document.getElementById("btnDelete").style.display="block";}
+function doDelete(){var ei=editingItem;if(!ei||!ei.id){showToast("لا يوجد عنصر");return;}supplyData[ei.dev]=(supplyData[ei.dev]||[]).filter(function(r){return r.id!==ei.id;});saveAll();closeModalDirect();buildAnalysisTabs();refreshHome();showToast("تم الحذف");}
+function getDevTests(d){var supKey=ANALYSIS_TO_SUPPLY[d];if(!supKey)return[];var items=supplyData[supKey]||[];return items.filter(function(i){return i.type==="Reagent";}).map(function(i){return i.name;}).filter(function(v,i,a){return a.indexOf(v)===i;});}
+function buildAnalysisTabs(){var nav=document.getElementById("analysisTabNav");var con=document.getElementById("analysisTabContent");nav.innerHTML="";con.innerHTML="";Object.keys(ANALYSIS_DEVICES).forEach(function(d,idx){var dev=ANALYSIS_DEVICES[d];var btn=document.createElement("button");btn.className="tab-btn-dev"+(idx===0?" active":"");btn.textContent=dev.short;btn.id="abtn-"+d;btn.onclick=function(){document.querySelectorAll(".tab-btn-dev").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".device-tab-content").forEach(function(c){c.classList.remove("active");});btn.classList.add("active");document.getElementById("atab-"+d).classList.add("active");};nav.appendChild(btn);var tab=document.createElement("div");tab.id="atab-"+d;tab.className="device-tab-content"+(idx===0?" active":"");tab.innerHTML=buildAnalysisTabContent(d,dev);con.appendChild(tab);});}
+function buildAnalysisTabContent(d,dev){var dts=getDevTests(d);dts.forEach(function(t){if(testStatus[d][t]===undefined)testStatus[d][t]="yes";});var av=dts.filter(function(t){return testStatus[d][t]==="yes";}).length;var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;"><span class="type-badge '+dev.typeBadge+'">'+dev.typeLabel+'</span><span style="font-size:11px;font-family:var(--mono);color:var(--text3)"><span id="as-'+d+'" style="color:var(--accent2);font-weight:700;">'+av+'</span>/'+dts.length+'</span></div>';html+='<div class="bulk-actions"><button class="btn-bulk" onclick="setAll(\''+d+'\',\'yes\')">تفعيل الكل ✓</button><button class="btn-bulk" onclick="setAll(\''+d+'\',\'no\')">إلغاء الكل ✗</button></div>';if(dts.length===0){html+='<p style="color:var(--text3);font-size:12px;text-align:center;padding:14px;">لا توجد كواشف</p>';return html;}html+='<div class="tests-grid">';dts.forEach(function(t){var v=testStatus[d][t]||"yes";var sid=t.replace(/[^a-zA-Z0-9]/g,'-');html+='<div class="test-item '+(v==="yes"?"available":"unavailable")+'" id="ti-'+d+'-'+sid+'" onclick="toggleTest(\''+d+'\',\''+t+'\')"><span class="test-name">'+t+'</span><span class="test-badge">'+(v==="yes"?"✓":"✗")+'</span></div>';});html+='</div>';return html;}
+function toggleTest(d,t){testStatus[d][t]=testStatus[d][t]==="yes"?"no":"yes";var sid=t.replace(/[^a-zA-Z0-9]/g,'-');var el=document.getElementById("ti-"+d+"-"+sid);if(el){var v=testStatus[d][t];el.className="test-item "+(v==="yes"?"available":"unavailable");el.querySelector(".test-badge").textContent=v==="yes"?"✓":"✗";}var dts=getDevTests(d);var av=dts.filter(function(t2){return testStatus[d][t2]==="yes";}).length;var s=document.getElementById("as-"+d);if(s)s.textContent=av;saveAll();refreshHome();}
+function setAll(d,v){getDevTests(d).forEach(function(t){testStatus[d][t]=v;});saveAll();buildAnalysisTabs();refreshHome();}
+function analyze(){var L=["══════════════════════════════","📊 تقرير التحليل الذكي","══════════════════════════════\n"];var M=["🥇","🥈","🥉","4️⃣","5️⃣"];var cD=Object.keys(ANALYSIS_DEVICES).filter(function(d){return ANALYSIS_DEVICES[d].type==="chem"||ANALYSIS_DEVICES[d].type==="both";});L.push("🧪 أجهزة الكيمياء:\n──────────────────────────────");cD.map(function(d){var dts=getDevTests(d);return{d:d,a:dts.filter(function(t){return testStatus[d]&&testStatus[d][t]==="yes";}).length,total:dts.length};}).sort(function(a,b){return b.a-a.a;}).forEach(function(r,i){L.push((M[i]||"•")+" "+ANALYSIS_DEVICES[r.d].name+": "+r.a+"/"+r.total+" اختبار");});L.push("");var hD=Object.keys(ANALYSIS_DEVICES).filter(function(d){return ANALYSIS_DEVICES[d].type==="hormone"||ANALYSIS_DEVICES[d].type==="both";});L.push("🧬 أجهزة الهرمون:\n──────────────────────────────");hD.map(function(d){var dts=getDevTests(d);return{d:d,a:dts.filter(function(t){return testStatus[d]&&testStatus[d][t]==="yes";}).length,total:dts.length};}).sort(function(a,b){return b.a-a.a;}).forEach(function(r,i){L.push((M[i]||"•")+" "+ANALYSIS_DEVICES[r.d].name+": "+r.a+"/"+r.total+" اختبار");});L.push("\n⚡ أجهزة متخصصة:\n──────────────────────────────");L.push("• Stratus CS 200 + Mini VIDAS: Troponin I + bHCG");L.push("• VARIANT II: HbA1c\n");var al=[];for(var d in SUPPLY_DEVICES)(supplyData[d]||[]).forEach(function(i){var r=getStatus(i);if(r.status!=="ok")al.push({s:r.status,n:i.name,d:SUPPLY_DEVICES[d].label.split(" ")[0],reasons:r.reasons});});if(al.length){L.push("⚠️ مواد تحتاج انتباهاً ("+al.length+"):\n──────────────────────────────");al.sort(function(a,b){return{red:0,yellow:1,orange:2}[a.s]-{red:0,yellow:1,orange:2}[b.s];});al.forEach(function(a){L.push(({red:"❌",yellow:"⚠️",orange:"🔶"}[a.s])+" "+a.n+" ("+a.d+") — "+a.reasons.join("، "));});}else{L.push("✅ جميع المواد في وضع جيد");}showResult(L.join("\n"));}
+function openReportOptions(){document.getElementById("reportModalOverlay").classList.add("open");}
+function closeReportModalDirect(){document.getElementById("reportModalOverlay").classList.remove("open");}
+function closeReportModal(e){if(e.target===document.getElementById("reportModalOverlay"))closeReportModalDirect();}
+function buildReportText(){var inclCoverage=document.getElementById("rOptCoverage").checked;var inclAlerts=document.getElementById("rOptAlerts").checked;var inclInfo=document.getElementById("rOptInfo").checked;var now=new Date();var dateStr=now.toLocaleDateString("ar-SA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});var timeStr=now.toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"});var L=["══════════════════════════════════","         📋 تقرير المختبر الكامل","══════════════════════════════════","📅 "+dateStr+"  🕐 "+timeStr];if(inclInfo){L.push("──────────────────────────────────");L.push("🏥 "+REPORT_INFO.facility);L.push("   "+REPORT_INFO.dept);L.push("👤 إعداد: "+REPORT_INFO.name+" — "+REPORT_INFO.title);}L.push("══════════════════════════════════\n");if(inclCoverage){L.push("📊 تغطية الأجهزة:\n──────────────────────────────────");Object.keys(ANALYSIS_DEVICES).forEach(function(d){var dev=ANALYSIS_DEVICES[d];var dts=getDevTests(d);var av=dts.filter(function(t){return testStatus[d][t]==="yes";});var mi=dts.filter(function(t){return testStatus[d][t]!=="yes";});var p=dts.length?Math.round(av.length/dts.length*100):0;L.push("🔹 "+dev.name+" ["+dev.typeLabel+"] — "+p+"%");L.push("   ✅ متوفر ("+av.length+"): "+(av.join(", ")||"—"));if(mi.length)L.push("   ❌ غير متوفر: "+mi.join(", "));L.push("");});}if(inclAlerts){L.push("⚠️ مواد تحتاج انتباهاً:\n──────────────────────────────────");var found=false;for(var d in SUPPLY_DEVICES){var cr=(supplyData[d]||[]).filter(function(r){return getStatus(r).status!=="ok";});if(cr.length){found=true;L.push("🔸 "+SUPPLY_DEVICES[d].label+":");cr.forEach(function(r){var rs=getStatus(r);var kp=getKitProgress(r);var ki=kp?(kp.remaining<=0?" | الكتة نفدت":" | باقي "+kp.remaining+"ي"):"";var icon=rs.status==="red"?"❌":rs.status==="yellow"?"⚠️":"🔶";L.push("   "+icon+" "+r.name+" | مخزون: "+r.qty+ki+" | صلاحية: "+expiryText(r.expiry));L.push("      "+rs.reasons.join("، "));});L.push("");}}if(!found)L.push("✅ جميع المواد في وضع جيد\n");}if(inclInfo){L.push("══════════════════════════════════");L.push("توقيع: "+REPORT_INFO.name);L.push("══════════════════════════════════");}return L.join("\n");}
+function generateReport(){closeReportModalDirect();showResult(buildReportText());}
+function printReport(){closeReportModalDirect();var inclCoverage=document.getElementById("rOptCoverage").checked;var inclAlerts=document.getElementById("rOptAlerts").checked;var inclInfo=document.getElementById("rOptInfo").checked;var now=new Date();var dateStr=now.toLocaleDateString("ar-SA",{weekday:"long",year:"numeric",month:"long",day:"numeric"});var timeStr=now.toLocaleTimeString("ar-SA",{hour:"2-digit",minute:"2-digit"});var h='<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>تقرير المختبر</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:Arial,sans-serif;direction:rtl;font-size:10pt;color:#000;padding:10mm;}@page{size:A4;margin:8mm;}.rh{text-align:center;border:2px solid #1a3352;border-radius:5px;padding:9px;margin-bottom:9px;background:#e8f0fc;}.rh h1{font-size:14pt;color:#0d2a4a;margin-bottom:3px;}.rh p{font-size:9pt;color:#333;margin:1px 0;}.rmeta{display:flex;justify-content:space-between;font-size:9pt;color:#333;margin-bottom:9px;padding:5px 8px;background:#f5f5f5;border:1px solid #ccc;border-radius:3px;}.db{margin-bottom:9px;page-break-inside:avoid;border:1px solid #1a3352;border-radius:4px;overflow:hidden;}.dt{background:#1a3352;color:#fff;padding:6px 9px;font-size:10.5pt;font-weight:bold;display:flex;justify-content:space-between;align-items:center;}.dbadge{font-size:8pt;background:rgba(255,255,255,0.2);padding:2px 6px;border-radius:8px;}.dbody{padding:7px 9px;}.ts{margin-bottom:5px;}.ts-title{font-size:8.5pt;font-weight:bold;color:#444;margin-bottom:3px;padding-bottom:2px;border-bottom:1px solid #eee;}.tg{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;}.tc{padding:3px 4px;border-radius:3px;font-size:8.5pt;text-align:center;}.tc.av{background:#e6fff2;border:1px solid #6fcf97;color:#1a5c37;}.tc.un{background:#fff0f0;border:1px solid #eb5757;color:#7b1515;}.ab{margin-bottom:9px;page-break-inside:avoid;border:1px solid #9b2c2c;border-radius:4px;overflow:hidden;}.at{background:#9b2c2c;color:#fff;padding:6px 9px;font-size:10.5pt;font-weight:bold;}.abody{padding:7px 9px;}.ai{display:flex;gap:6px;padding:4px 0;border-bottom:1px solid #eee;font-size:9pt;}.ai:last-child{border-bottom:none;}.ai-name{font-weight:bold;font-size:9.5pt;}.ai-detail{font-size:8.5pt;color:#555;}.ai-dev{font-size:8pt;color:#888;}.rf{margin-top:10px;border-top:2px solid #1a3352;padding-top:8px;display:flex;justify-content:space-between;font-size:9pt;}.sign-line{border-top:1px solid #000;width:140px;margin:14px auto 2px;text-align:center;font-size:9pt;}@media print{.db{page-break-inside:avoid;}.ab{page-break-inside:avoid;}}</style></head><body>';h+='<div class="rh"><h1>📋 تقرير حالة المختبر</h1>';if(inclInfo){h+='<p>'+REPORT_INFO.facility+'</p><p>'+REPORT_INFO.dept+'</p>';}h+='</div>';h+='<div class="rmeta"><span>📅 '+dateStr+' — '+timeStr+'</span>'+(inclInfo?'<span>👤 '+REPORT_INFO.name+'</span>':'')+'</div>';if(inclCoverage){Object.keys(ANALYSIS_DEVICES).forEach(function(d){var dev=ANALYSIS_DEVICES[d];var dts=getDevTests(d);var av=dts.filter(function(t){return testStatus[d][t]==="yes";});var mi=dts.filter(function(t){return testStatus[d][t]!=="yes";});var p=dts.length?Math.round(av.length/dts.length*100):0;h+='<div class="db"><div class="dt"><span>'+dev.name+'</span><span class="dbadge">'+dev.typeLabel+' — '+p+'% ('+av.length+'/'+dts.length+')</span></div><div class="dbody">';if(av.length>0){h+='<div class="ts"><div class="ts-title">✅ متوفر ('+av.length+')</div><div class="tg">';av.forEach(function(t){h+='<div class="tc av">'+t+'</div>';});h+='</div></div>';}if(mi.length>0){h+='<div class="ts"><div class="ts-title">❌ غير متوفر ('+mi.length+')</div><div class="tg">';mi.forEach(function(t){h+='<div class="tc un">'+t+'</div>';});h+='</div></div>';}h+='</div></div>';});}if(inclAlerts){var allA=[];for(var d in SUPPLY_DEVICES)(supplyData[d]||[]).forEach(function(item){var rs=getStatus(item);if(rs.status!=="ok")allA.push({item:item,rs:rs,devLabel:SUPPLY_DEVICES[d].label});});allA.sort(function(a,b){return{red:0,yellow:1,orange:2}[a.rs.status]-{red:0,yellow:1,orange:2}[b.rs.status];});h+='<div class="ab">';if(allA.length>0){h+='<div class="at">⚠️ مواد تحتاج انتباهاً ('+allA.length+')</div><div class="abody">';allA.forEach(function(a){var icon=a.rs.status==="red"?"❌":a.rs.status==="yellow"?"⚠️":"🔶";var kp=getKitProgress(a.item);var ki=kp?(kp.remaining<=0?" | نفدت":" | باقي "+kp.remaining+"ي"):"";h+='<div class="ai"><span>'+icon+'</span><div><div class="ai-name">'+a.item.name+'</div><div class="ai-detail">مخزون: '+a.item.qty+ki+' | صلاحية: '+expiryText(a.item.expiry)+'</div><div class="ai-dev">'+a.devLabel+' — '+a.rs.reasons.join("، ")+'</div></div></div>';});h+='</div>';}else{h+='<div class="at" style="background:#1a6b3a;">✅ جميع المواد في وضع جيد</div>';}h+='</div>';}if(inclInfo){h+='<div class="rf"><div><div>'+REPORT_INFO.facility+'</div><div>'+REPORT_INFO.dept+'</div></div><div><div class="sign-line">'+REPORT_INFO.name+'<br>'+REPORT_INFO.title+'</div></div></div>';}h+='<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},500);};<'+'/script></body></html>';var win=window.open("","_blank");if(!win){showToast("اسمح بالنوافذ المنبثقة");return;}win.document.write(h);win.document.close();}
+function shareReport(){closeReportModalDirect();var text=buildReportText();if(navigator.share){navigator.share({title:"تقرير مختبر سبت العلايه",text:text}).catch(function(){copyToClipboard(text);});}else{copyToClipboard(text);}}
+function copyReport(){var t=document.getElementById("result").textContent;if(!t.trim()){showToast("اضغط تحليل أولاً");return;}copyToClipboard(t);}
+function copyToClipboard(text){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){showToast("✓ تم النسخ");}).catch(function(){fc(text);});}else fc(text);}
+function fc(t){var ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();try{document.execCommand("copy");showToast("✓ تم النسخ");}catch(e){}document.body.removeChild(ta);}
+function showResult(t){var w=document.getElementById("resultWrapper");document.getElementById("result").textContent=t;w.style.display="block";setTimeout(function(){w.scrollIntoView({behavior:"smooth",block:"nearest"});},100);}
+function saveAll(){try{localStorage.setItem("labMgr_v7",JSON.stringify({ts:testStatus,sd:supplyData}));}catch(e){}}
+function loadAll(){try{var r=localStorage.getItem("labMgr_v7");return r?JSON.parse(r):{};}catch(e){return{};}}
+function showToast(msg){var t=document.getElementById("toast");t.textContent=msg;t.style.transform="translateX(-50%) translateY(0)";t.style.opacity="1";clearTimeout(window._tt);window._tt=setTimeout(function(){t.style.transform="translateX(-50%) translateY(60px)";t.style.opacity="0";},2000);}
+init();
+</script>
+</body>
+</html>
