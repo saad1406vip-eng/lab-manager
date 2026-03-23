@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lab Manager">
+<title>Lab Manager Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1b2a; --bg2: #112236; --bg3: #162d46;
+  --card: #1a3352; --border: #1e3f63;
+  --accent: #00c8ff; --accent2: #00ff9d; --accent3: #ff6b6b;
+  --text: #e8f4fd; --text2: #7aa8cc; --text3: #4a7a9b;
+  --yes: #00ff9d; --no: #ff6b6b;
+  --font: 'IBM Plex Sans Arabic', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 10px; --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; direction: rtl; font-size: 14px; line-height: 1.5; overflow-x: hidden; }
+header { background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 800px; margin: 0 auto; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.logo-area { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 26px; color: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
+h1 { font-size: 16px; font-weight: 700; color: var(--text); }
+.subtitle { font-size: 11px; color: var(--text3); }
+.btn-icon { background: var(--card); border: 1px solid var(--border); color: var(--text2); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.btn-icon:hover { color: var(--accent); border-color: var(--accent); }
+main { max-width: 800px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.dashboard { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.dash-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+.coverage-bars { display: flex; flex-direction: column; gap: 8px; }
+.coverage-row { display: grid; grid-template-columns: 110px 1fr 50px; align-items: center; gap: 10px; }
+.cov-label { font-size: 11px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--mono); }
+.cov-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+.cov-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+.cov-pct { font-size: 11px; font-family: var(--mono); color: var(--accent); text-align: left; }
+.devices-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.tab-nav { display: flex; overflow-x: auto; border-bottom: 1px solid var(--border); scrollbar-width: none; background: var(--bg2); }
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn { flex-shrink: 0; background: none; border: none; color: var(--text3); padding: 12px 14px; cursor: pointer; font-family: var(--font); font-size: 12px; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(0,200,255,0.05); }
+.tab { display: none; padding: 16px; animation: fadeIn 0.2s ease; }
+.tab.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.tab-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.tab-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.tab-meta { font-size: 11px; color: var(--text3); text-align: left; }
+.type-badge { display: inline-block; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+.badge-chem { background: rgba(0,200,255,0.15); color: var(--accent); }
+.badge-hormone { background: rgba(0,255,157,0.15); color: var(--accent2); }
+.badge-both { background: rgba(255,165,0,0.15); color: #ffaa00; }
+.badge-emergency { background: rgba(255,107,107,0.15); color: var(--no); }
+.tab-stats { font-size: 11px; font-family: var(--mono); color: var(--text3); }
+.tab-stats span { color: var(--accent2); font-weight: 600; }
+.cat-header { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; padding: 10px 0 6px; border-bottom: 1px solid var(--border); margin-bottom: 6px; margin-top: 12px; }
+.cat-header:first-of-type { margin-top: 0; }
+.tests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 6px; }
+.test-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; user-select: none; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; }
+.test-item.available { border-color: rgba(0,255,157,0.3); background: rgba(0,255,157,0.05); }
+.test-item.unavailable { border-color: rgba(255,107,107,0.2); background: rgba(255,107,107,0.03); opacity: 0.6; }
+.test-name { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text); }
+.test-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+.test-item.available .test-badge { background: rgba(0,255,157,0.15); color: var(--yes); }
+.test-item.unavailable .test-badge { background: rgba(255,107,107,0.15); color: var(--no); }
+.bulk-actions { display: flex; gap: 8px; margin-bottom: 12px; }
+.btn-bulk { background: var(--bg2); border: 1px solid var(--border); color: var(--text2); padding: 5px 12px; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font); font-size: 11px; transition: all 0.15s; }
+.btn-bulk:hover { border-color: var(--accent); color: var(--accent); }
+.analysis-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+.action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.btn-primary { background: linear-gradient(135deg, var(--accent), #0095cc); border: none; color: #000; padding: 10px 18px; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 700; transition: all 0.2s; box-shadow: 0 0 16px rgba(0,200,255,0.3); }
+.btn-secondary { background: var(--bg2); border: 1px solid var(--border); color: var(--text2); padding: 10px 16px; border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font); font-size: 13px; transition: all 0.2s; }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+#resultWrapper { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px; }
+pre#result { font-family: var(--font); font-size: 13px; line-height: 1.8; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent2); color: #000; padding: 10px 20px; border-radius: 20px; font-weight: 600; font-size: 13px; z-index: 999; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); pointer-events: none; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+@media (max-width: 480px) { .coverage-row { grid-template-columns: 90px 1fr 44px; } .tests-grid { grid-template-columns: repeat(2, 1fr); } .tab-btn { padding: 10px 10px; font-size: 11px; } }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <span class="logo-icon">⬡</span>
+      <div>
+        <h1>Lab Manager Pro</h1>
+        <p class="subtitle">نظام تحليل تغطية الأجهزة</p>
+      </div>
+    </div>
+    <button class="btn-icon" onclick="resetAll()" title="إعادة ضبط">↺</button>
+  </div>
+</header>
+<main>
+  <section class="dashboard">
+    <div class="dash-title">التغطية الحالية</div>
+    <div class="coverage-bars" id="coverageBars"></div>
+  </section>
+  <section class="devices-section">
+    <div class="tab-nav" id="tabNav"></div>
+    <div id="tabsContainer"></div>
+  </section>
+  <section class="analysis-section">
+    <div class="section-title">🔍 التحليل الذكي</div>
+    <div class="action-row">
+      <button class="btn-primary" onclick="analyze()">تحليل الوضع</button>
+      <button class="btn-secondary" onclick="generateReport()">تقرير كامل</button>
+      <button class="btn-secondary" onclick="copyReport()">نسخ التقرير</button>
+    </div>
+    <div id="resultWrapper" style="display:none">
+      <pre id="result"></pre>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+var CHEM_CATEGORIES = {
+  "السكر والكلى": ["GLU","HbA1c","UREA","CREA","UA","Microalbumin"],
+  "البروتينات والكبد": ["TP","ALB","ALT","AST","TBIL","DBIL","GGT","ALP"],
+  "إنزيمات أخرى": ["LIP","AMY","LDH","CK","CK-MB","NH3","Procalcitonin"],
+  "الدهنيات": ["CHOL","TG","HDL","LDL"],
+  "الإلكتروليتات والمعادن": ["Na","K","Cl","Ca","PHOS","Mg"],
+  "الحديد والالتهاب": ["Fe-Iron","UIBC","CRP"]
+};
+
+var HORMONE_CATEGORIES = {
+  "الغدة الدرقية": ["TSH","FT4","FT3"],
+  "هرمونات التكاثر": ["LH","FSH","Prolactin","Testosterone","Estradiol-E2","Progesterone"],
+  "هرمونات أخرى": ["Cortisol-AM","DHEA-S","PTH","Insulin","C-peptide"],
+  "الفيتامينات والمعادن": ["Vitamin-B12","Vitamin-D","Folate","Ferritin"],
+  "مؤشرات الأورام": ["AFP","CA-125","CA-15-3","CA-19-9","CA-72-3","CEA","PSA"],
+  "طوارئ": ["HCG-Beta","Troponin"]
+};
+
+var DEVICES = {
+  atellica:  { name:"Siemens Atellica",  short:"Atellica", type:"both",      typeLabel:"كيمياء + هرمون",  typeBadge:"badge-both",      categories: Object.assign({},CHEM_CATEGORIES,HORMONE_CATEGORIES) },
+  c311:      { name:"Cobas c311",         short:"c311",     type:"chem",      typeLabel:"كيمياء",          typeBadge:"badge-chem",      categories: CHEM_CATEGORIES },
+  c303:      { name:"Cobas Pure C303",    short:"C303",     type:"chem",      typeLabel:"كيمياء",          typeBadge:"badge-chem",      categories: CHEM_CATEGORIES },
+  e402:      { name:"Cobas Pure e402",    short:"e402",     type:"hormone",   typeLabel:"هرمون",           typeBadge:"badge-hormone",   categories: HORMONE_CATEGORIES },
+  dimension: { name:"Dimension EXL 200", short:"EXL200",   type:"chem",      typeLabel:"كيمياء",          typeBadge:"badge-chem",      categories: CHEM_CATEGORIES },
+  e411:      { name:"Cobas e411",         short:"e411",     type:"hormone",   typeLabel:"هرمون",           typeBadge:"badge-hormone",   categories: HORMONE_CATEGORIES },
+  vidas:     { name:"Mini VIDAS",         short:"VIDAS",    type:"emergency", typeLabel:"طوارئ محدودة",   typeBadge:"badge-emergency", categories: {"طوارئ":["HCG-Beta","Troponin"]} }
+};
+
+var ALL_CHEM=[]; for(var c in CHEM_CATEGORIES) ALL_CHEM=ALL_CHEM.concat(CHEM_CATEGORIES[c]);
+ALL_CHEM=ALL_CHEM.filter(function(v,i,a){return a.indexOf(v)===i;});
+var ALL_HORMONE=[]; for(var h in HORMONE_CATEGORIES) ALL_HORMONE=ALL_HORMONE.concat(HORMONE_CATEGORIES[h]);
+ALL_HORMONE=ALL_HORMONE.filter(function(v,i,a){return a.indexOf(v)===i;});
+var ALL_TESTS=ALL_CHEM.concat(ALL_HORMONE).filter(function(v,i,a){return a.indexOf(v)===i;});
+
+var devices={};
+
+function init(){
+  var saved=loadData();
+  for(var d in DEVICES){
+    devices[d]={};
+    getDeviceTests(d).forEach(function(t){
+      devices[d][t]=(saved&&saved[d]&&saved[d][t]!==undefined)?saved[d][t]:"yes";
+    });
+  }
+  buildTabs();
+  updateDashboard();
+}
+
+function getDeviceTests(d){
+  var cats=DEVICES[d].categories; var tests=[];
+  for(var cat in cats) tests=tests.concat(cats[cat]);
+  return tests.filter(function(v,i,a){return a.indexOf(v)===i;});
+}
+
+function buildTabs(){
+  var tabNav=document.getElementById("tabNav");
+  var container=document.getElementById("tabsContainer");
+  tabNav.innerHTML=""; container.innerHTML="";
+  Object.keys(DEVICES).forEach(function(d,index){
+    var dev=DEVICES[d];
+    var btn=document.createElement("button");
+    btn.className="tab-btn"+(index===0?" active":"");
+    btn.textContent=dev.short;
+    btn.setAttribute("onclick","showTab('"+d+"')");
+    btn.id="btn-"+d;
+    tabNav.appendChild(btn);
+    var tab=document.createElement("div");
+    tab.id="tab-"+d; tab.className="tab"+(index===0?" active":"");
+    var devTests=getDeviceTests(d);
+    var avail=devTests.filter(function(t){return devices[d][t]==="yes";}).length;
+    var html='<div class="tab-header">';
+    html+='<div class="tab-title">'+dev.name+'</div>';
+    html+='<div class="tab-meta"><span class="type-badge '+dev.typeBadge+'">'+dev.typeLabel+'</span><br>';
+    html+='<span class="tab-stats"><span id="stats-'+d+'">'+avail+'</span> / '+devTests.length+'</span></div></div>';
+    html+='<div class="bulk-actions">';
+    html+='<button class="btn-bulk" onclick="setAll(\''+d+'\',\'yes\')">تفعيل الكل ✓</button>';
+    html+='<button class="btn-bulk" onclick="setAll(\''+d+'\',\'no\')">إلغاء الكل ✗</button></div>';
+    var cats=dev.categories;
+    for(var cat in cats){
+      html+='<div class="cat-header">'+cat+'</div><div class="tests-grid">';
+      cats[cat].forEach(function(t){
+        var val=devices[d][t]||"no";
+        var sid=t.replace(/[^a-zA-Z0-9]/g,'-');
+        html+='<div class="test-item '+(val==="yes"?"available":"unavailable")+'" id="item-'+d+'-'+sid+'" onclick="toggle(\''+d+'\',\''+t+'\')">';
+        html+='<span class="test-name">'+t+'</span><span class="test-badge">'+(val==="yes"?"✓":"✗")+'</span></div>';
+      });
+      html+='</div>';
+    }
+    tab.innerHTML=html; container.appendChild(tab);
+  });
+}
+
+function toggle(device,test){
+  if(!devices[device]) return;
+  devices[device][test]=devices[device][test]==="yes"?"no":"yes";
+  saveData();
+  var el=document.getElementById("item-"+device+"-"+test.replace(/[^a-zA-Z0-9]/g,'-'));
+  if(el){ var val=devices[device][test]; el.className="test-item "+(val==="yes"?"available":"unavailable"); el.querySelector(".test-badge").textContent=val==="yes"?"✓":"✗"; }
+  updateTabStats(device); updateDashboard();
+}
+
+function setAll(device,value){
+  getDeviceTests(device).forEach(function(t){devices[device][t]=value;});
+  saveData(); buildTabs(); showTab(device); updateDashboard();
+}
+
+function updateTabStats(device){
+  var el=document.getElementById("stats-"+device); if(!el) return;
+  var avail=getDeviceTests(device).filter(function(t){return devices[device][t]==="yes";}).length;
+  el.textContent=avail;
+}
+
+function showTab(id){
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");});
+  document.querySelectorAll(".tab-btn").forEach(function(b){b.classList.remove("active");});
+  var tab=document.getElementById("tab-"+id); var btn=document.getElementById("btn-"+id);
+  if(tab) tab.classList.add("active"); if(btn) btn.classList.add("active");
+}
+
+function updateDashboard(){
+  var bars=document.getElementById("coverageBars");
+  var rows=Object.keys(DEVICES).map(function(d){
+    var devTests=getDeviceTests(d);
+    var avail=devTests.filter(function(t){return devices[d][t]==="yes";}).length;
+    var pct=devTests.length>0?Math.round(avail/devTests.length*100):0;
+    return {d:d,avail:avail,total:devTests.length,pct:pct};
+  });
+  rows.sort(function(a,b){return b.total-a.total;});
+  bars.innerHTML=rows.map(function(r){
+    return '<div class="coverage-row"><div class="cov-label">'+DEVICES[r.d].short+'</div>'+
+      '<div class="cov-track"><div class="cov-fill" style="width:'+r.pct+'%"></div></div>'+
+      '<div class="cov-pct">'+r.avail+'/'+r.total+'</div></div>';
+  }).join("");
+}
+
+function analyze(){
+  var lines=[];
+  lines.push("══════════════════════════════");
+  lines.push("📊 تقرير التحليل الذكي");
+  lines.push("══════════════════════════════\n");
+
+  var chemDevices=Object.keys(DEVICES).filter(function(d){return DEVICES[d].type==="chem"||DEVICES[d].type==="both";});
+  lines.push("🧪 أجهزة الكيمياء:");
+  lines.push("──────────────────────────────");
+  var chemRanked=chemDevices.map(function(d){
+    var avail=ALL_CHEM.filter(function(t){return devices[d]&&devices[d][t]==="yes";}).length;
+    return {d:d,avail:avail};
+  }).sort(function(a,b){return b.avail-a.avail;});
+  var medals=["🥇","🥈","🥉","4️⃣"];
+  chemRanked.forEach(function(r,i){
+    lines.push((medals[i]||"•")+" "+DEVICES[r.d].name+": "+r.avail+"/"+ALL_CHEM.length+" اختبار");
+  });
+  lines.push("");
+
+  var hormDevices=Object.keys(DEVICES).filter(function(d){return DEVICES[d].type==="hormone"||DEVICES[d].type==="both";});
+  lines.push("🧬 أجهزة الهرمون:");
+  lines.push("──────────────────────────────");
+  var hormRanked=hormDevices.map(function(d){
+    var avail=ALL_HORMONE.filter(function(t){return devices[d]&&devices[d][t]==="yes";}).length;
+    return {d:d,avail:avail};
+  }).sort(function(a,b){return b.avail-a.avail;});
+  hormRanked.forEach(function(r,i){
+    lines.push((medals[i]||"•")+" "+DEVICES[r.d].name+": "+r.avail+"/"+ALL_HORMONE.length+" اختبار");
+  });
+  lines.push("");
+
+  lines.push("✦ اختبارات حصرية لكل جهاز هرمون:");
+  hormRanked.forEach(function(r){
+    var exclusive=ALL_HORMONE.filter(function(t){
+      if(!devices[r.d]||devices[r.d][t]!=="yes") return false;
+      return hormRanked.filter(function(rr){return rr.d!==r.d;}).every(function(rr){return !devices[rr.d]||devices[rr.d][t]!=="yes";});
+    });
+    if(exclusive.length>0) lines.push("   "+DEVICES[r.d].short+": "+exclusive.join(", "));
+  });
+  lines.push("");
+
+  lines.push("⚡ Mini VIDAS (طوارئ):");
+  lines.push("──────────────────────────────");
+  if(devices.vidas&&devices.vidas["Troponin"]==="yes") lines.push("• Troponin ✓");
+  if(devices.vidas&&devices.vidas["HCG-Beta"]==="yes") lines.push("• HCG-Beta ✓");
+  lines.push("");
+
+  var allCovered={};
+  Object.keys(DEVICES).forEach(function(d){
+    getDeviceTests(d).forEach(function(t){if(devices[d]&&devices[d][t]==="yes") allCovered[t]=true;});
+  });
+  var uncovered=ALL_TESTS.filter(function(t){return !allCovered[t];});
+  if(uncovered.length>0){
+    lines.push("⚠️ غير مغطاة ("+uncovered.length+"):");
+    lines.push("──────────────────────────────");
+    lines.push(uncovered.join(", "));
+  } else { lines.push("✅ جميع الاختبارات مغطاة"); }
+
+  showResult(lines.join("\n"));
+}
+
+function generateReport(){
+  var now=new Date();
+  var dateStr=now.toLocaleDateString("ar-SA",{year:"numeric",month:"long",day:"numeric"});
+  var lines=[];
+  lines.push("══════════════════════════════");
+  lines.push("📋 تقرير المختبر الكامل");
+  lines.push("📅 "+dateStr);
+  lines.push("══════════════════════════════\n");
+  Object.keys(DEVICES).forEach(function(d){
+    var dev=DEVICES[d]; var devTests=getDeviceTests(d);
+    var avail=devTests.filter(function(t){return devices[d][t]==="yes";});
+    var missing=devTests.filter(function(t){return devices[d][t]!=="yes";});
+    var pct=devTests.length>0?Math.round(avail.length/devTests.length*100):0;
+    lines.push("🔹 "+dev.name+" ["+dev.typeLabel+"] ("+pct+"%)");
+    lines.push("✅ متوفر ("+avail.length+"): "+(avail.length>0?avail.join(", "):"—"));
+    if(missing.length>0) lines.push("❌ غير متوفر ("+missing.length+"): "+missing.join(", "));
+    lines.push("");
+  });
+  showResult(lines.join("\n"));
+}
+
+function copyReport(){
+  var text=document.getElementById("result").textContent;
+  if(!text.trim()){showToast("لا يوجد تقرير — اضغط تحليل أولاً");return;}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){showToast("✓ تم النسخ");}).catch(function(){fallbackCopy(text);});
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand("copy");showToast("✓ تم النسخ");}catch(e){showToast("تعذّر النسخ");}
+  document.body.removeChild(ta);
+}
+function showResult(text){
+  document.getElementById("result").textContent=text;
+  var w=document.getElementById("resultWrapper"); w.style.display="block";
+  setTimeout(function(){w.scrollIntoView({behavior:"smooth",block:"nearest"});},100);
+}
+function showToast(msg){
+  var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},2500);
+}
+function saveData(){try{localStorage.setItem("labManager_v3",JSON.stringify(devices));}catch(e){}}
+function loadData(){try{var r=localStorage.getItem("labManager_v3");return r?JSON.parse(r):null;}catch(e){return null;}}
+function resetAll(){
+  if(!confirm("إعادة ضبط كل الإعدادات؟")) return;
+  try{localStorage.removeItem("labManager_v3");}catch(e){}
+  init(); showToast("تم إعادة الضبط");
+}
+init();
+</script>
+</body>
+</html>
